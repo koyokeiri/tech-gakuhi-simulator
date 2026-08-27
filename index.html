@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>学費分納シミュレーター</title>
+
+<link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<div class="header">
+  <img src="headder.png" alt="ヘッダー">
+</div>
+
+<div class="container">
+
+<h2>学費分納シミュレーター</h2>
+
+<label>学費</label>
+<input id="tuition" value="￥1,030,000">
+
+<label>給付型奨学金（区分）</label>
+<select id="category"></select>
+
+<label class="reduction
+">減免額</label>
+<input id="reduction">
+
+<div class="spacer"></div>
+
+<label>給付型奨学金（月額）</label>
+<input id="s1">
+
+<label>貸与型：第一種奨学金（月額）</label>
+<input id="s2">
+
+<label>貸与型：第二種奨学金（月額）</label>
+<select id="s3"></select>
+
+<label>貸与型：入学時特別増額奨学金</label>
+<select id="s4"></select>
+
+<div class="inline-group">
+  <div>
+    <label>◆ 通学形態</label>
+    <select id="commute">
+      <option value="home">自宅</option>
+      <option value="away">自宅外</option>
+    </select>
+  </div>
+
+  <div>
+    <label>◆ 保証制度</label>
+    <select id="guarantee">
+      <option value="normal">人的保証</option>
+      <option value="org">機関保証</option>
+    </select>
+  </div>
+</div>
+
+<div class="spacer"></div>
+
+<div class="box-orange">
+<h3>計算結果</h3>
+</div>
+<div id="result" class="result"></div>
+<div id="extra" class="extra"></div>
+
+<div class="parent">
+    <button id="resetBtn">リセット
+      <div class="back">
+      </div>
+      <div class="front">
+        <img src="reset btn.png" alt="更新ボタン" width="17px" height="17px">
+      </div>
+    </button>
+</div>
+
+<script>
+
+// ===== データ =====
+const data = {
+ "なし": { reduction:0 },
+ "第Ⅰ区分": { reduction:690000 },
+ "第Ⅱ区分": { reduction:460100 },
+ "第Ⅲ区分": { reduction:230100 },
+ "第Ⅳ区分（理工農）": { reduction:0 },
+ "第Ⅰ区分（多子世帯）": { reduction:690000 },
+ "第Ⅱ区分（多子世帯）": { reduction:690000 },
+ "第Ⅲ区分（多子世帯）": { reduction:690000 },
+ "第Ⅳ区分（多子世帯）": { reduction:690000 },
+ "多子世帯": { reduction:690000 }
+};
+
+// 金額
+const homeGrant = {
+ "第Ⅰ区分":38300,"第Ⅱ区分":25600,"第Ⅲ区分":12800,
+ "第Ⅳ区分（理工農）":0,
+ "第Ⅰ区分（多子世帯）":38300,"第Ⅱ区分（多子世帯）":25600,
+ "第Ⅲ区分（多子世帯）":12800,"第Ⅳ区分（多子世帯）":9600,
+ "多子世帯":0,"なし":0
+};
+
+const awayGrant = {
+ "第Ⅰ区分":75800,"第Ⅱ区分":50600,"第Ⅲ区分":25300,
+ "第Ⅳ区分（理工農）":0,
+ "第Ⅰ区分（多子世帯）":75800,"第Ⅱ区分（多子世帯）":50600,
+ "第Ⅲ区分（多子世帯）":25300,"第Ⅳ区分（多子世帯）":19000,
+ "多子世帯":0,"なし":0
+};
+
+const homeLoan1 = {
+ "第Ⅲ区分":23800,"多子世帯":3800,"なし":0
+};
+
+const awayLoan1 = {
+ "第Ⅲ区分":18300,"多子世帯":10800,"なし":0
+};
+
+function format(n){ return "￥"+Math.round(n).toLocaleString(); }
+function parse(v){ return Number(String(v).replace(/[￥,]/g,""))||0; }
+
+// 初期生成
+Object.keys(data).forEach(k=>{
+  category.innerHTML+=`<option value="${k}">${k}</option>`;
+});
+
+s3.innerHTML='<option value="0"></option>';
+for(let i=20000;i<=120000;i+=10000){
+  s3.innerHTML+=`<option value="${i}">${format(i)}</option>`;
+}
+
+s4.innerHTML='<option value="0"></option>';
+for(let i=100000;i<=500000;i+=100000){
+  s4.innerHTML+=`<option value="${i}">${format(i)}</option>`;
+}
+
+// 連動
+function applyCategory(){
+  const key=category.value||"なし";
+  const type=commute.value;
+
+  reduction.value=format(data[key].reduction);
+
+  if(type==="home"){
+    s1.value=format(homeGrant[key]||0);
+    s2.value=format(homeLoan1[key]||0);
+  }else{
+    s1.value=format(awayGrant[key]||0);
+    s2.value=format(awayLoan1[key]||0);
+  }
+
+  calculate();
+}
+
+category.addEventListener("change",applyCategory);
+commute.addEventListener("change",applyCategory);
+
+// 入力処理
+document.querySelectorAll("input").forEach(el=>{
+  el.addEventListener("input",e=>{
+    const n=parse(e.target.value);
+    e.target.value=n?format(n):"";
+    calculate();
+  });
+});
+document.querySelectorAll("select").forEach(el=>{
+  el.addEventListener("change",calculate);
+});
+
+// 計算
+function calculate(){
+
+  // ===== 入力取得 =====
+  const tuitionVal = parse(tuition.value);
+  const reductionVal = parse(reduction.value);
+
+  // ===== 1年次学費 =====
+  const firstYear = tuitionVal - reductionVal;
+
+  // ===== 奨学金取得 =====
+  let grant   = parse(s1.value);
+  let loan1   = parse(s2.value);
+  let loan2   = Number(s3.value) || 0;
+  let special = Number(s4.value) || 0;
+
+  // ===== 保証制度 =====
+  if(guarantee.value === "org"){
+    loan1  *= 0.95;
+    loan2  *= 0.95;
+    special *= 0.95;
+  }
+
+  // ===== 合計計算 =====
+  const monthly = grant + loan1 + loan2;
+
+  const yearly  = (grant * 12)
+                + (loan1 * 12)
+                + (loan2 * 12)
+                + special;
+
+  const total9  = (grant * 9)
+                + (loan1 * 9)
+                + (loan2 * 9)
+                + special;
+
+  // ===== 奨学金充当額 =====
+  const applied = Math.min(total9, firstYear);
+
+  // ===== 表示作成 =====
+  let html = `
+    <div class="result-row">
+
+      <!-- 左側 -->
+      <div class="left">
+        <div class="row"><div class="calculation-top">1年次学費</div>${format(firstYear)}</div>
+        <div class="row"><div class="calculation">奨学金充当額</div>${format(applied)}</div>
+  `;
+
+  // ===== 分岐表示 =====
+  if(firstYear > applied){
+
+    html += `
+        <div class="red"><div class="calculation">自己資金負担額</div>${format(firstYear - applied)}</div>
+    `;
+
+  } else {
+
+    html += `
+        <div class="green"><div class="calculation">お手元に残る奨学金</div>${format(yearly - applied)}</div>
+    `;
+  }
+
+  html += `
+      </div>
+
+      <!-- 右側 -->
+      <div class="right">
+        <div class="row"><div class="calculation-top">奨学金給付・貸与合計（12月まで）</div>${format(total9)}</div>
+        <div class="row"><div class="calculation">奨学金給付・貸与合計（月額）</div>${format(monthly)}</div>
+        <div class="row"><div class="calculation">奨学金給付・貸与合計（年間）</div>${format(yearly)}</div>
+      </div>
+
+    </div>
+  `;
+
+  // ===== 表示反映 =====
+  result.innerHTML = html;
+}
+``
+
+// リセット
+resetBtn.addEventListener("click",()=>{
+  category.value="なし";
+  commute.value="home";
+  guarantee.value="normal";
+  s3.value="0";
+  s4.value="0";
+
+  tuition.value="￥1,030,000";
+  reduction.value="";
+  s1.value="";
+  s2.value="";
+
+  calculate();
+});
+
+calculate();
+
+</script>
+</body>
+</html>

@@ -1,0 +1,148 @@
+body {
+  margin: 0;
+  font-family: "Yu Gothic", sans-serif;
+  background: #f5f5f5;
+}
+
+.header {
+  max-width: 640px;
+  margin: 0 auto;
+}
+.header img {
+  width: 100%;
+  display: block;
+}
+
+.container {
+  max-width: 600px;
+  margin: 0 auto;
+  background: white;
+  padding: 20px;
+  font-weight: bold;
+}
+
+h2 {
+  text-align: center;
+  color: #1C1A1A;
+}
+
+.reduction{
+  color: #4db5ab;
+}
+
+label {
+  display: block;
+  margin-top: 8px;
+  color: #494949;
+}
+
+input, select {
+  width: 100%;
+  padding: 8px;
+  margin-top: 4px;
+  border: 1px solid #DAD8D8;
+  border-radius: 3px;
+  color: #494949;
+}
+
+select{
+  background-color: #F1EFEF;
+}
+
+.calculation-top{
+  font-size: 11px;
+}
+
+.calculation{
+  font-size: 11px;
+  margin-top: 10px;
+}
+
+/* 横並び */
+.inline-group {
+  display: flex;
+  gap: 10px;
+}
+.inline-group div {
+  flex: 1;
+}
+
+.result-row{
+  display: flex;
+}
+
+.row{
+  color: #494949;
+}
+
+.left{
+  flex: 1;
+}
+
+.right{
+  flex: 1;
+  line-height: 1.6;
+}
+
+/* 余白 */
+.spacer {
+  height: 40px;
+}
+
+.red { color: red; }
+.green { color: green; }
+
+.box-orange
+{
+height: 40px;
+background-color: #4db5ab;
+border-radius: 5px 5px 0 0;
+}
+
+h3{
+  padding-top: 8px;
+  font-size: 17px;
+  color: #fff;
+  width: 100%;
+  text-align: center;
+}
+
+.result {
+  background-color: #eef9f7;
+  padding: 20px 20px 20px 20px;
+  margin-bottom: 10px;
+  border-radius: 0 0 5px 5px;
+}
+
+/* ボタン */
+button {
+  margin-top: 30px;
+  width: 100%;
+  padding: 10px;
+  font-size: 16px;
+  color: #ffffff;
+  font-weight: bold;
+  background-color: #595959;
+  border-radius: 3px;
+}
+
+/* 重ねる */
+.parent{
+  position: relative;
+}
+
+.back{
+  position: absolute;
+  top: 53.5%;
+  left: 5%;
+  width: 27px;
+  height: 27px;
+  border-radius: 13px;
+  background-color: #fff;
+}
+
+.front{
+  position: absolute;
+  top: 59.5%;
+  left: 5.8%;
+}
