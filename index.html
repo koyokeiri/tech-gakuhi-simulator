@@ -34,7 +34,10 @@
 <input id="s1">
 
 <label>貸与型：第一種奨学金（月額）</label>
-<input id="s2">
+<input id="s2_auto">
+<select id="s2_select" style="display:none;">
+</select>
+
 
 <label>貸与型：第二種奨学金（月額）</label>
 <select id="s3"></select>
@@ -141,19 +144,65 @@ for(let i=100000;i<=500000;i+=100000){
   s4.innerHTML+=`<option value="${i}">${format(i)}</option>`;
 }
 
+function createLoan1Select(){
+
+  s2_select.innerHTML = "";
+
+  if(commute.value === "home"){
+
+    s2_select.innerHTML = `
+      <option value="53000">￥53,000</option>
+      <option value="40000">￥40,000</option>
+      <option value="30000">￥30,000</option>
+      <option value="20000">￥20,000</option>
+      <option value="0">￥0</option>
+    `;
+
+  }else{
+
+    s2_select.innerHTML = `
+      <option value="60000">￥60,000</option>
+      <option value="50000">￥50,000</option>
+      <option value="40000">￥40,000</option>
+      <option value="30000">￥30,000</option>
+      <option value="20000">￥20,000</option>
+      <option value="0">￥0</option>
+    `;
+
+  }
+
+}
+
 // 連動
 function applyCategory(){
-  const key=category.value||"なし";
-  const type=commute.value;
+  const key = category.value || "なし";
+  const type = commute.value;
 
-  reduction.value=format(data[key].reduction);
+  createLoan1Select();
 
-  if(type==="home"){
-    s1.value=format(homeGrant[key]||0);
-    s2.value=format(homeLoan1[key]||0);
+  reduction.value = format(data[key].reduction);
+
+  // 給付型奨学金
+  if(type === "home"){
+    s1.value = format(homeGrant[key] || 0);
+
+    // 第一種奨学金（自動表示用）
+    s2_auto.value = format(homeLoan1[key] || 0);
   }else{
-    s1.value=format(awayGrant[key]||0);
-    s2.value=format(awayLoan1[key]||0);
+    s1.value = format(awayGrant[key] || 0);
+
+    // 第一種奨学金（自動表示用）
+    s2_auto.value = format(awayLoan1[key] || 0);
+  }
+
+  // 区分が「なし」のときだけプルダウン表示
+  if(key === "なし"){
+    s2_auto.style.display = "none";
+    s2_select.style.display = "block";
+
+  }else{
+    s2_auto.style.display = "block";
+    s2_select.style.display = "none";
   }
 
   calculate();
@@ -186,7 +235,10 @@ function calculate(){
 
   // ===== 奨学金取得 =====
   let grant   = parse(s1.value);
-  let loan1   = parse(s2.value);
+  let loan1;if(category.value === "なし"){
+    loan1 = Number(s2_select.value) || 0;}
+  else{
+    loan1 = parse(s2_auto.value);}``
   let loan2   = Number(s3.value) || 0;
   let special = Number(s4.value) || 0;
 
@@ -253,30 +305,58 @@ function calculate(){
   // ===== 表示反映 =====
   result.innerHTML = html;
 }
-``
 
-// リセット
-resetBtn.addEventListener("click",()=>{
-  category.value="なし";
-  commute.value="home";
-  guarantee.value="normal";
-  s3.value="0";
-  s4.value="0";
+// ===== リセット =====
+resetBtn.addEventListener("click", () => {
 
-  tuition.value="￥1,030,000";
-  reduction.value="";
-  s1.value="";
-  s2.value="";
+  // 学費
+  tuition.value = "￥1,190,000";
 
-  calculate();
+  // 区分
+  category.value = "なし";
+
+  // 通学形態
+  commute.value = "home";
+
+  // 保証制度
+  guarantee.value = "normal";
+
+  // 第二種奨学金
+  s3.value = "0";
+
+  // 入学時特別増額奨学金
+  s4.value = "0";
+
+  // 第一種プルダウン再生成
+  createLoan1Select();
+
+  // 減免額
+  reduction.value = "￥0";
+
+  // 給付型奨学金
+  s1.value = "￥0";
+
+  // 第一種奨学金
+  s2_auto.value = "";
+
+  // 第一種奨学金（なし用）
+  s2_select.value = "53000";
+
+  // 表示切り替え
+  s2_auto.style.display = "none";
+  s2_select.style.display = "block";
+
+  // 区分連動処理を再実行
+  applyCategory();
+
 });
-
-calculate();
 
 //印刷
 document.getElementById("printBtn").addEventListener("click", () => {
   window.print();
 });
+
+applyCategory();
 
 </script>
 </body>
