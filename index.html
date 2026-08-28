@@ -130,17 +130,19 @@ function format(n){ return "￥"+Math.round(n).toLocaleString(); }
 function parse(v){ return Number(String(v).replace(/[￥,]/g,""))||0; }
 
 // 初期生成
+category.innerHTML ='<option value="">選択してください</option>';
+
 Object.keys(data).forEach(k=>{
   category.innerHTML+=`<option value="${k}">${k}</option>`;
 });
 
-s3.innerHTML='<option value="0"></option>';
-for(let i=20000;i<=120000;i+=10000){
+s3.innerHTML ='<option value="">選択してください</option>';
+for(let i=120000;i>=20000;i-=10000){
   s3.innerHTML+=`<option value="${i}">${format(i)}</option>`;
 }
 
-s4.innerHTML='<option value="0"></option>';
-for(let i=100000;i<=500000;i+=100000){
+s4.innerHTML ='<option value="">選択してください</option>';
+for(let i=500000;i>=100000;i-=100000){
   s4.innerHTML+=`<option value="${i}">${format(i)}</option>`;
 }
 
@@ -315,7 +317,7 @@ resetBtn.addEventListener("click", () => {
   tuition.value = "￥1,190,000";
 
   // 区分
-  category.value = "なし";
+  category.value = "";
 
   // 通学形態
   commute.value = "home";
@@ -324,10 +326,10 @@ resetBtn.addEventListener("click", () => {
   guarantee.value = "normal";
 
   // 第二種奨学金
-  s3.value = "0";
+  s3.value = "";
 
   // 入学時特別増額奨学金
-  s4.value = "0";
+  s4.value = "";
 
   // 第一種プルダウン再生成
   createLoan1Select();
@@ -342,7 +344,7 @@ resetBtn.addEventListener("click", () => {
   s2_auto.value = "";
 
   // 第一種奨学金（なし用）
-  s2_select.value = "53000";
+  s2_select.value = "";
 
   // 表示切り替え
   s2_auto.style.display = "none";
