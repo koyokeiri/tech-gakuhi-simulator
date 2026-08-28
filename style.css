@@ -126,7 +126,7 @@ button {
   border-radius: 3px;
 }
 
-/* 重ねる */
+/* 更新ボタン　矢印 */
 .parent{
   position: relative;
 }
@@ -146,3 +146,81 @@ button {
   top: 59.5%;
   left: 5.8%;
 }
+
+/* 印刷ボタン */
+#printBtn{
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+
+  width: 120px;
+  padding: 12px;
+
+  background-color: #0D347E;
+  color: white;
+
+  border: none;
+  border-radius: 8px;
+
+  cursor: pointer;
+
+  box-shadow: 0 2px 8px rgba(0,0,0,.2);
+}
+
+#printBtn:hover{
+  background-color: #1950b5;
+}
+
+@media print {
+
+  *{
+  -webkit-print-color-adjust: exact !important;
+print-color-adjust: exact !important;
+  }
+
+ button,
+ #printBtn,
+ #resetBtn{
+   display:none !important;
+  }
+
+ body{
+  background:#fff;
+  zoom:85%;
+ }
+
+ .header img{
+  width:100%;
+  max-height:100px;
+  object-fit:cover;
+ }
+
+  .box-orange{
+   background-color:#F17B05 !impor*ant;
+    color:#fff !important;
+  *
+
+  .result
+  .result-row,
+  .inline-group{
+  page-break-inside:avoid;
+  break-inside:avoid;
+  background-color:*FEF5F0 !important;
+  }
+
+  .*ontainer{
+    page-break-inside:av*id;
+    break-inside:avoid;
+  }
+
+  .container{
+    page-break-inside: avoid;
+    break-inside: avoid;
+    width:100%;
+    max-width:100%;
+    margin:0;
+    padding:10px
+  }
+
+  }
+}*
